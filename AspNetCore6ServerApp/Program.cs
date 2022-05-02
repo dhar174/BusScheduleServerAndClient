@@ -95,7 +95,7 @@ public class Program
 
         var current_timestamp = DateTime.Parse(DateTime.Now.ToString("HH:mm:ss"));
 
-        var y = ScheduleRetrievalHelper.GetNextArrivalByStop(7, current_timestamp);
+        var y = ScheduleRetrievalHelper.GetNextArrivalByStop(static_stops_list[7], current_timestamp);
 
         var time_span = ScheduleRetrievalHelper.GetTimeUntilNextArrival(current_timestamp, y.Item1);
 
@@ -134,17 +134,15 @@ public class Program
         //app.MapDefaultControllerRoute();
         app.UsePathBase("/Test");
         //app.StartAsync();
-        // app.Use(async (context, next) =>
-        // {
-        //     await context.Response.WriteAsync("Hello World!");
-        //     await next.Invoke();
-        // });
-
 
         app.Run(url: "https://localhost:8080");
 
+        app.StopAsync();
+
 
     }
+
+
 
     public static void CompileStaticStopsList(int num_stops)
     {
@@ -157,8 +155,6 @@ public class Program
 
     public static String AcceptRequests(String request_type, int object_id)
     {
-
-
         var current_timestamp = DateTime.Parse(DateTime.Now.ToString("HH:mm:ss"));
         switch (request_type)
         {
@@ -171,7 +167,6 @@ public class Program
                     var time_span = ScheduleRetrievalHelper.GetTimeUntilNextArrival(current_timestamp, y);
                     var next_on_route = string.Format("Next Arrival at Route {0} will be at: {1} in {2} minutes and {3} seconds", object_id, y, Math.Abs(time_span) / 60, ((Math.Abs(time_span) - ((Math.Abs(time_span) / 60) * 60))));
                     return next_on_route;
-
                 }
                 else
                 {
@@ -179,12 +174,16 @@ public class Program
                 }
             case "stop":
                 {
-                    var y = ScheduleRetrievalHelper.GetNextArrivalByStop(object_id, current_timestamp);
+                    var stop = static_stops_list[object_id];
+
+                    var y = ScheduleRetrievalHelper.GetNextArrivalByStop(stop, current_timestamp);
 
                     var time_span = ScheduleRetrievalHelper.GetTimeUntilNextArrival(current_timestamp, y.Item1);
 
                     var result_string = string.Format("Next Arrival at Stop {0} will be at: {1} in {2} minutes and {3} seconds", object_id, y.Item1, Math.Abs(time_span) / 60, ((Math.Abs(time_span) - ((Math.Abs(time_span) / 60) * 60))));
+
                     return result_string;
+
                 }
             default:
                 return string.Format("Invalid request type."); ;

@@ -25,10 +25,6 @@ public class Routes
     public LinkedListNode<Stops> GetNextStop()
     {
 
-
-
-
-
         if (first_o_day == true)
         {
             first_o_day = false;
@@ -67,7 +63,6 @@ public class Routes
         var timeSpan = new TimeSpan(24, 0, 0);
         var increment = new TimeSpan(0, 15, 0);
         var totalIncrements = timeSpan.Ticks / increment.Ticks;
-        //System.Console.WriteLine(totalIncrements);
         var startDate = DateTime.Now.Date;
         startDate = DateTime.Parse(startDate.ToString("HH:mm:ss"));
         startDate = startDate.Add(offset);
@@ -75,7 +70,6 @@ public class Routes
         var endDate = DateTime.Now.Date;
         endDate = endDate.Add(timeSpan + offset);
         Console.WriteLine("endDate for route" + id + ": " + endDate.ToString("HH:mm:ss"));
-        Console.WriteLine();
 
         var nextArrival = startDate.ToString("HH:mm:ss");
 
@@ -94,19 +88,12 @@ public class Routes
                 }
                 if (DateTime.Parse(nextArrival) > startDate)
                 {
-                    // Console.WriteLine("nextArrival for route" + id + ": " + nextArrival);
 
                     this.stop_queue.Enqueue(nextArrival);
                 }
             }
 
-
-
-            // System.Console.WriteLine(nextArrival);
-            //stops_list_linked.AddLast(stop);
         }
-
-
 
         var dates = Enumerable.Range(0, this.stop_queue.Count).Select(i => (String)this.stop_queue.Peek()).ToList();
         this.Arrival_times_route = new LinkedList<String>(dates as IEnumerable<String>);
@@ -135,14 +122,6 @@ public class Routes
         this.next_stop = this.GetNextStop();
 
         this.next_stop_id = this.first_stop.Value.id;
-
-
-
-
-
-
-        //this.next_Arrival_time = this.current_stop.Value.next_Arrival_time.Value;
-        //this.next_Arrival_time = this.next_Arrival_time.Value.AddMinutes(15);
 
         this.id = id;
 
@@ -178,7 +157,6 @@ public class Stops
         this.populate_Arrival_times_for_stop(id);
 
         this.stops_list_linked = this.GetStops(10);
-        Console.WriteLine("stops_list_linked.Count: " + this.stops_list_linked.Count);
         this.first_stop = new LinkedListNode<Stops>(this.stops_list_linked.ToArray()[0]);
 
         this.current_stop = this.first_stop;
@@ -235,7 +213,6 @@ public class Stops
         var timeSpan = new TimeSpan(24, 0, 0);
         var increment = new TimeSpan(0, 15, 0);
         var totalIncrements = timeSpan.Ticks / increment.Ticks;
-        //System.Console.WriteLine(totalIncrements);
         var startDate = DateTime.Now.Date;
         startDate = DateTime.Parse(startDate.ToString("HH:mm:ss"));
         startDate = startDate.Add(offset);
@@ -262,7 +239,6 @@ public class Stops
                 }
                 if (DateTime.Parse(nextArrival) > startDate)
                 {
-                    // Console.WriteLine("nextArrival for route" + id + ": " + nextArrival);
 
                     this.stop_queue.Enqueue(nextArrival);
                 }
@@ -270,7 +246,6 @@ public class Stops
 
 
             this.next_Arrival_time = nextArrival;
-            // System.Console.WriteLine(nextArrival);
         }
 
 
@@ -283,9 +258,9 @@ public class Stops
         }
         var now_timestamp = DateTime.Parse(DateTime.Now.ToString("HH:mm:ss"));
 
-        if (Program.routes.Count != 0)
+        if (Program.routes.Count != 0 && Program.static_stops_list.Count != 0)
         {
-            (this.next_Arrival_time, found_in_stop) = ScheduleRetrievalHelper.GetNextArrivalByStop((int)this.stops_times_dict.Where(i => (int)i.Item1 == id).FirstOrDefault().Item1, now_timestamp);
+            (this.next_Arrival_time, found_in_stop) = ScheduleRetrievalHelper.GetNextArrivalByStop(Program.static_stops_list[id], now_timestamp);
         }
 
 
