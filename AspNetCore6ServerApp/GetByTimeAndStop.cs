@@ -78,7 +78,7 @@ public class ScheduleRetrievalHelper
 
 
 
-                    next_arrival_time = (String)route.stop_queue.Dequeue();
+                    next_arrival_time = (String)route.stop_queue.Peek();
 
 
                     Time_span = GetTimeUntilNextArrival(current_time, next_arrival_time);
