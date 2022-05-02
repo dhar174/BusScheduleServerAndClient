@@ -16,7 +16,6 @@ public class Program
 
     public static void Main()
     {
-        // Populate the static stops list first
         CompileStaticStopsList(10);
 
         route1 = new Routes(1);
@@ -27,6 +26,8 @@ public class Program
         routes.Add(route1);
         routes.Add(route2);
         routes.Add(route3);
+        // Populate the static stops list first
+
         var args = new WebApplicationOptions
         {
             ApplicationName = typeof(Program).Assembly.FullName,

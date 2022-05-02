@@ -23,6 +23,7 @@ public class ScheduleRetrievalHelper
             }
             next_arrival_time = (String)route.stop_queue.Peek();
             var Time_span = GetTimeUntilNextArrival(current_time, next_arrival_time);
+            Console.WriteLine("Time_span in routes: " + Time_span);
             while (Time_span > 0)
             {
                 next_arrival_time = (String)route.stop_queue.Dequeue();
@@ -45,38 +46,60 @@ public class ScheduleRetrievalHelper
         var times = new List<DateTime>();
 
         var routesu = new List<Routes>();
+        var stopsu = new List<int>();
+        int found_in_route = 0;
+        int found_in_stop = 0;
 
-        for (int i = 0; i < Program.routes.Count; i++)
+        Console.WriteLine("route count: " + Program.routes.Count);
+
+        foreach (var route in Program.routes)
         {
 
+            found_in_route = (int)route.id;
 
-            for (int j = 0; j < Program.routes[i].stops_times_dict.Count; j++)
+
+            if (route.stop_queue.Count == 0)
             {
-                Console.WriteLine("count " + Program.routes[i].stops_times_dict.Count);
-                Console.WriteLine("j " + j);
-                Console.WriteLine("Route " + i + " next arrival time " + (String)Program.routes[i].next_Arrival_time);
-                Console.WriteLine("checking match on route " + i + " " + Program.routes[i].stops_times_dict.Where(x => x.Item1 == stop_id).FirstOrDefault().Item2 + " " + (String)Program.routes[i].next_Arrival_time);
+                Console.WriteLine("No stops in queue");
+                return (next_arrival_time, found_in_route);
+            }
+            else
+            {
 
-                if (Program.routes[i].stops_times_dict.Where(x => x.Item1 == stop_id).FirstOrDefault().Item2.Equals((String)Program.routes[i].next_Arrival_time))
+                //next_arrival_time = route.next_stop.Value.stop_queue.Where(x => x.Contains(stop_id.ToString())).FirstOrDefault();
+                next_arrival_time = (String)route.next_stop.Value.stop_queue.Peek();
+                Console.WriteLine("next_arrival_time: " + next_arrival_time);
+
+
+                var Time_span = GetTimeUntilNextArrival(current_time, next_arrival_time);
+                Console.WriteLine("Time_span in stops: " + Time_span);
+                foreach (var stop in route.stops_list_linked)
                 {
-                    Console.WriteLine("time of match? " + Program.routes[i].stops_times_dict.Where(x => x.Item1 == stop_id).FirstOrDefault().Item2);
-
-                    Console.WriteLine("stop id of match " + Program.routes[i].stops_times_dict.Where(x => x.Item1 == stop_id).FirstOrDefault().Item1);
-                    Console.WriteLine("time of match " + Program.routes[i].stops_times_dict.Where(x => x.Item1 == stop_id).First().Item2);
 
 
-                    Console.WriteLine("Found stop " + Program.routes[i].next_stop_id);
 
-                    next_arrival_time = GetNextArrivalOnRoute(Program.routes[i], current_time);
-                    times.Add(DateTime.ParseExact(next_arrival_time, "HH:mm:ss", null));
-                    routesu.Add(Program.routes[i]);
-                    break;
+                    next_arrival_time = (String)route.stop_queue.Dequeue();
+
+
+                    Time_span = GetTimeUntilNextArrival(current_time, next_arrival_time);
+
+                    if (Time_span < (15 * 60) && DateTime.Compare(DateTime.ParseExact(next_arrival_time, "HH:mm:ss", null), current_time) > 0)
+                    {
+                        routesu.Add(route);
+                        stopsu.Add(stop_id);
+                        times.Add(DateTime.ParseExact(next_arrival_time, "HH:mm:ss", null));
+                        found_in_stop = stop_id;
+                        break;
+                    }
                 }
 
 
             }
 
+
         }
+
+
         for (int i = 0; i < times.Count; i++)
         {
 
@@ -84,12 +107,11 @@ public class ScheduleRetrievalHelper
         }
 
 
-        var closestTime = times.OrderBy(t => Math.Abs((t - current_time).Ticks))
-                             .First();
+        var closestTime = times.OrderBy(x => Math.Abs(x.Subtract(current_time).TotalSeconds)).First();
 
         Console.WriteLine("Next arrival time for stop: " + closestTime.ToString("HH:mm:ss"));
-        Console.WriteLine("Found in route: " + routesu[times.IndexOf(closestTime)].id);
-        var found_in_route = (int)routesu[times.IndexOf(closestTime)].id;
+        Console.WriteLine("Found in route: " + found_in_route);
+        Console.WriteLine("Stop is: " + found_in_stop);
         return (closestTime.ToString("HH:mm:ss"), found_in_route);
 
     }
