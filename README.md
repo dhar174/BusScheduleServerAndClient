@@ -26,3 +26,5 @@ Example: https://localhost:8080/Test/GetNextArrivalTime/stop/6
 Known Issues and Improvements:
 This application is basic and would benefit from multiple improvements that could be made were this actually headed to production and not a demo. 
 For instance: automatic refresh (an easy addition), aesthetic improvements, more data, realtime telemetry data, etc. as well as more ways to compile and ditribute the client other than running only as a basic web application. 
+
+NOTE: Route numbers start at zero. This needs to be fixed, but just note it for now.
